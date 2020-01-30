@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -84,7 +83,7 @@ class LoginController extends Controller
             return response([
                 "token"      => $token,
                 "token_type" => "bearer",
-                "expires_at" => Auth::user()->accessTokens->first()->expires_at
+                "expires_at" => auth()->user()->accessTokens->first()->expires_at
             ], 200);
         } else {
             return response([
@@ -101,8 +100,8 @@ class LoginController extends Controller
      */
     public function logout()
     {
-        if (Auth::check()) {
-           Auth::user()
+        if (auth()->check()) {
+           auth()->user()
             ->AauthAcessToken()
             ->delete();
         }

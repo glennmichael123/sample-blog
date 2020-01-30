@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
 use App\Post;
 use Illuminate\Http\Request;
 use App\Http\Resources\PostResource;
@@ -60,7 +59,7 @@ class PostsController extends Controller
                 ], 422);
         }
 
-        $post = Post::createPost($request->all(), Auth::user()->id);
+        $post = Post::createPost($request->all());
 
         return new PostResource($post);
     }
@@ -76,7 +75,10 @@ class PostsController extends Controller
         try {
             return response(["data" => new PostResource($post)]);
         } catch (\Exception $e) {
-            return response(["message" => "No query results for model [App\\Post]."], 404);
+          return response([
+            "message"   => "No query results for model [".get_class($post)."]",
+            "exception" => $e->getMessage(),
+        ], 404);
         }
     }
 

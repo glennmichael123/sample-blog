@@ -36,20 +36,21 @@ class Post extends Model
      * Save user to database
      *
      * @param  \App\Post  $data
-     * @param  \App\User $userId
      *
      * @return array
      */
-    public static function createPost($data, $userId)
+    public static function createPost($data)
     {
-        $post = array('title'   => $data['title'],
-                      'slug'    => str_slug($data['title']),
-                      'image'   => $data['image'],
-                      'content' => $data['content'],
-                      'user_id' => $userId
-                    );
+        $post = new Post([
+          'title'   => $data['title'],
+          'slug'    => str_slug($data['title']),
+          'image'   => $data['image'],
+          'content' => $data['content'],
+        ]);
 
-        $postId = self::create($post)->id;
+        $postId = auth()->user()
+            ->posts()
+            ->save($post)->id;
 
         return self::find($postId);
     }
@@ -57,11 +58,11 @@ class Post extends Model
     /**
      * Comments that this post has many of
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
     public function comments()
     {
-    	return $this->hasMany('App\Comment', 'parent_id');
+    	return $this->morphMany('App\Comment', 'commentable');
     }
 
      /**

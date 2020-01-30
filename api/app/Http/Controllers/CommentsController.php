@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
-use Auth;
 use App\Post;
 use App\Comment;
 use Illuminate\Http\Request;
@@ -57,7 +55,7 @@ class CommentsController extends Controller
                     "errors"  => $validator->errors(),
                 ], 422);
             } else {
-                $comment = Comment::createComment($request->all(), Auth::user()->id, $post->id);
+                $comment = Comment::createComment($request->all(), auth()->user()->id, $post->id);
 
                 return new CommentResource($comment);
             }

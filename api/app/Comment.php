@@ -2,7 +2,9 @@
 
 namespace App;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
+
 
 class Comment extends Model
 {
@@ -22,14 +24,15 @@ class Comment extends Model
      */
     public static function createComment($data, $userId, $postId)
     {
-        $comment = array('body' => $data['body'],
-                          'commentable_id'   => $postId,
-                          'creator_id'       => $userId,
-                          'parent_id'        => $postId,
-                          'commentable_type' => "App\Post",
-                        );
+        $comment = new Comment([
+          'body' => $data['body'],
+          'creator_id' => $userId,
+        ]);
 
-        $commentId = self::create($comment)->id;
+        $post = Post::find($postId);
+
+        $commentId = $post->comments()
+            ->save($comment)->id;
 
         return self::find($commentId);
     }
@@ -37,11 +40,11 @@ class Comment extends Model
     /**
      * Post that this comment belongs to
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function posts()
+    public function commentable()
     {
-    	return $this->belongsTo('App\Post');
+    	return $this->morphTo();
     }
 
     /**
